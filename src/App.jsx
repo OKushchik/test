@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react'
 import './App.css'
 import Card from "./components/Card.jsx";
+import {getParseFromLocalStorage, setLocalStorage} from "./utils/storageUtils.js";
 
 function App() {
     const [data, setData] = useState([]);
@@ -11,14 +12,14 @@ function App() {
 
     useEffect(() => {
         if (localStorage.getItem("favoriteImages")) {
-            const favoriteImages = JSON.parse(localStorage.getItem("favoriteImages"))
+            const favoriteImages = getParseFromLocalStorage("favoriteImages")
             setFavoriteImages(favoriteImages)
         }
     }, [])
 
     const addToFavorite = (id) => {
         setFavoriteImages((prevState) => {
-            localStorage.setItem("favoriteImages", JSON.stringify([...prevState, id]));
+            setLocalStorage("favoriteImages", [...prevState, id])
             return [...prevState, id]
         })
     }
