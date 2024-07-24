@@ -1,17 +1,16 @@
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useState} from 'react'
 import './App.css'
-import Card from "./components/Card.jsx";
+import Card from "./components/card/Card.jsx";
 import {getParseFromLocalStorage, setLocalStorage} from "./utils/storageUtils.js";
-import Modal from "./components/Modal.jsx";
+import Modal from "./components/modal/Modal.jsx";
+import {SearchBlock} from "./components/searchBlock/SearchBlock.jsx";
 
 function App() {
     const [data, setData] = useState([]);
-    const [isFiltered, setIsFiltered] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isFavorite, setIsFavorite] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [favoriteImages, setFavoriteImages] = useState([]);
     const [chosenImage, setChosenImage] = useState();
-    const inputRef = useRef('');
 
     useEffect(() => {
         if (localStorage.getItem("favoriteImages")) {
@@ -31,47 +30,23 @@ function App() {
         setFavoriteImages((prevState) => prevState.filter((el) => el !== id))
     }
 
-    const filterDataByFavorite = () => {
-        setIsFiltered(!isFiltered)
-    }
-
     const openModal = (el) => {
         setChosenImage(el)
         setIsModalOpen(true)
     }
 
-    const searchImages = (searchVal) => {
-        if (searchVal) {
-            const URL = "https://pixabay.com/api/?key=" + import.meta.env.VITE_IMAGE_API_KEY + "&q=" + encodeURIComponent(searchVal);
-            fetch(URL, {
-                method: "GET"
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    setData(data.hits)
-                    setIsFiltered(false)
-                    setIsLoading(false)
-
-                })
-                .catch((error) => console.log(error))
-        }
-    }
-
-    const getRenderedData = (isFiltered) => {
-        return isFiltered ? data.filter((el) => favoriteImages.includes(el.id)) : data
+    const getRenderedData = (isFavorite) => {
+        return isFavorite ? data.filter((el) => favoriteImages.includes(el.id)) : data
     }
 
     return (
         <>
-            <div className={`searchField ${isLoading ? "middle" : ""}`}>
-                <input className='searchInput' ref={inputRef}/>
-                <button className='btn searchBtn' onClick={() => searchImages(inputRef.current.value)}>Search</button>
-                <button className='btn favoriteBtn'
-                        onClick={filterDataByFavorite}>{isFiltered ? 'Show All' : 'My Favorite'}</button>
-            </div>
-            <div className="classContainer">
+            <SearchBlock isFavorite={isFavorite} setData={setData}
+                         setIsFavorite={setIsFavorite}/>
+
+            <div className="imagesContainer">
                 {
-                    getRenderedData(isFiltered).map((el) => {
+                    getRenderedData(isFavorite).map((el) => {
                         return (
                             <Card key={el.id} image={el}
                                   isFavorite={favoriteImages.includes(el.id)} addToFavorite={addToFavorite}
