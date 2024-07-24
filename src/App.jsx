@@ -6,7 +6,6 @@ function App() {
     const [data, setData] = useState([]);
     const [isFiltered, setIsFiltered] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [searchVal, setSearchVal] = useState('');
     const [favoriteImages, setFavoriteImages] = useState([]);
     const inputRef = useRef('');
 
@@ -16,23 +15,6 @@ function App() {
             setFavoriteImages(favoriteImages)
         }
     }, [])
-
-    useEffect(() => {
-        if (searchVal) {
-            const URL = "https://pixabay.com/api/?key=" + import.meta.env.VITE_IMAGE_API_KEY + "&q=" + encodeURIComponent(searchVal);
-            fetch(URL, {
-                method: "GET"
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    setTimeout(() => {
-                        setData(data.hits)
-                    }, 500)
-                    setIsLoading(false)
-                })
-                .catch((error) => console.log(error))
-        }
-    }, [searchVal])
 
     const addToFavorite = (id) => {
         setFavoriteImages((prevState) => {
@@ -49,6 +31,22 @@ function App() {
         setIsFiltered(!isFiltered)
     }
 
+    const searchImages = (searchVal) => {
+        if (searchVal) {
+            const URL = "https://pixabay.com/api/?key=" + import.meta.env.VITE_IMAGE_API_KEY + "&q=" + encodeURIComponent(searchVal);
+            fetch(URL, {
+                method: "GET"
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    setData(data.hits)
+                    setIsFiltered(false)
+                    setIsLoading(false)
+                })
+                .catch((error) => console.log(error))
+        }
+    }
+
     const getRenderedData = (isFiltered) => {
         return isFiltered ? data.filter((el) => favoriteImages.includes(el.id)) : data
     }
@@ -57,7 +55,7 @@ function App() {
         <>
             <div className={`searchField ${isLoading ? "middle" : ""}`}>
                 <input ref={inputRef}/>
-                <button onClick={() => setSearchVal(inputRef.current.value)}>Search</button>
+                <button onClick={() => searchImages(inputRef.current.value)}>Search</button>
                 <button onClick={filterDataByFavorite}>{isFiltered ? 'Show All' : 'My Favorite'}</button>
             </div>
             <div className="classContainer">
