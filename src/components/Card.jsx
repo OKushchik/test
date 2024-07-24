@@ -1,10 +1,16 @@
-function Card({image, imageId, isFavorite, addToFavorite, removeFromFavorite}) {
+function Card({
+                  image: {id, largeImageURL, webformatURL, user},
+                  isFavorite,
+                  addToFavorite,
+                  removeFromFavorite,
+                  openModal
+              }) {
     return (
         <div className="card">
-            <img src={image} alt="img"/>
+            <img src={webformatURL} alt={user} onClick={() => openModal({largeImageURL, user})}/>
             {
-                isFavorite ? <i className="fa-solid fa-heart" onClick={() => removeFromFavorite(imageId)}></i> :
-                    <i className="fa-regular fa-heart" onClick={() => addToFavorite(imageId)}></i>
+                isFavorite ? <i className="fa-solid fa-heart" onClick={() => removeFromFavorite(id)}></i> :
+                    <i className="fa-regular fa-heart" onClick={() => addToFavorite(id)}></i>
             }
 
         </div>

@@ -2,12 +2,15 @@ import {useEffect, useRef, useState} from 'react'
 import './App.css'
 import Card from "./components/Card.jsx";
 import {getParseFromLocalStorage, setLocalStorage} from "./utils/storageUtils.js";
+import Modal from "./components/Modal.jsx";
 
 function App() {
     const [data, setData] = useState([]);
     const [isFiltered, setIsFiltered] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [favoriteImages, setFavoriteImages] = useState([]);
+    const [chosenImage, setChosenImage] = useState();
     const inputRef = useRef('');
 
     useEffect(() => {
@@ -32,6 +35,11 @@ function App() {
         setIsFiltered(!isFiltered)
     }
 
+    const openModal = (el) => {
+        setChosenImage(el)
+        setIsModalOpen(true)
+    }
+
     const searchImages = (searchVal) => {
         if (searchVal) {
             const URL = "https://pixabay.com/api/?key=" + import.meta.env.VITE_IMAGE_API_KEY + "&q=" + encodeURIComponent(searchVal);
@@ -43,6 +51,7 @@ function App() {
                     setData(data.hits)
                     setIsFiltered(false)
                     setIsLoading(false)
+
                 })
                 .catch((error) => console.log(error))
         }
@@ -55,21 +64,26 @@ function App() {
     return (
         <>
             <div className={`searchField ${isLoading ? "middle" : ""}`}>
-                <input ref={inputRef}/>
-                <button onClick={() => searchImages(inputRef.current.value)}>Search</button>
-                <button onClick={filterDataByFavorite}>{isFiltered ? 'Show All' : 'My Favorite'}</button>
+                <input className='searchInput' ref={inputRef}/>
+                <button className='btn searchBtn' onClick={() => searchImages(inputRef.current.value)}>Search</button>
+                <button className='btn favoriteBtn'
+                        onClick={filterDataByFavorite}>{isFiltered ? 'Show All' : 'My Favorite'}</button>
             </div>
             <div className="classContainer">
                 {
                     getRenderedData(isFiltered).map((el) => {
                         return (
-                            <Card key={el.id} image={el.largeImageURL} imageId={el.id}
+                            <Card key={el.id} image={el}
                                   isFavorite={favoriteImages.includes(el.id)} addToFavorite={addToFavorite}
-                                  removeFromFavorite={removeFromFavorite}/>
+                                  removeFromFavorite={removeFromFavorite} openModal={openModal}/>
+
                         )
                     })
                 }
             </div>
+            {
+                isModalOpen && <Modal setIsModalOpen={setIsModalOpen} image={chosenImage}/>
+            }
         </>
     )
 }
