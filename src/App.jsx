@@ -23,10 +23,6 @@ function App() {
         }
     }, [searchVal])
 
-    useEffect(()=>{
-        localStorage.setItem("favoriteImages", JSON.stringify(favoriteImages));
-    }, [favoriteImages])
-
     const fetchFunc =()=> {
         const URL = "https://pixabay.com/api/?key="+import.meta.env.VITE_IMAGE_API_KEY+"&q="+encodeURIComponent(searchVal);
         fetch(URL,{
@@ -43,7 +39,10 @@ function App() {
     }
 
     const addToFavorite =(id)=>{
-        setFavoriteImages((prevState)=>[...prevState,id])
+        setFavoriteImages((prevState)=>{
+           localStorage.setItem("favoriteImages", JSON.stringify([...prevState,id]));
+           return [...prevState,id]
+        })
     }
 
     const removeFromFavorite=(id)=>{
@@ -63,7 +62,7 @@ function App() {
         <div className={`searchField ${isLoading ? "middle" : ""}`}>
             <input ref={inputRef} />
             <button onClick={()=>setSearchVal(inputRef.current.value)}>Search</button>
-            <button onClick={filterDataByFavorite}>My Favorite</button>
+            <button onClick={filterDataByFavorite}>{isFiltered ? 'Show All' : 'My Favorite'}</button>
         </div>
         <div className="classContainer">
             {
