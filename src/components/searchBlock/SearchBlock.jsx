@@ -1,5 +1,6 @@
 import './searchBlock.css'
 import {useRef, useState} from "react";
+import {getImages} from "../../api/index.js";
 
 export const SearchBlock = ({setData, isFavorite, setIsFavorite}) => {
     const [isLoaded, setIsLoaded] = useState(false)
@@ -12,10 +13,7 @@ export const SearchBlock = ({setData, isFavorite, setIsFavorite}) => {
     const searchImages = (searchVal) => {
         if (searchVal) {
             setIsEmpty(false)
-            const URL = "https://pixabay.com/api/?key=" + import.meta.env.VITE_IMAGE_API_KEY + "&q=" + encodeURIComponent(searchVal);
-            fetch(URL, {
-                method: "GET"
-            })
+            getImages(searchVal)
                 .then((response) => response.json())
                 .then((data) => {
                     setData(data.hits)
