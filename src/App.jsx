@@ -47,8 +47,6 @@ function App() {
         <>
             <SearchBlock isFavorite={isFavorite} setData={setData}
                          setIsFavorite={setIsFavorite}/>
-
-
             <div className="imagesContainer">
                 {
                     getRenderedData(isFavorite).map((el) => {
