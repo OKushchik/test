@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import './App.css'
 import Card from "./components/card/Card.jsx";
-import {getParseFromLocalStorage, setLocalStorage} from "./utils/storageUtils.js";
+import {getFromLocalStorage, getParseFromLocalStorage, setLocalStorage} from "./utils/storageUtils.js";
 import Modal from "./components/modal/Modal.jsx";
 import {SearchBlock} from "./components/searchBlock/SearchBlock.jsx";
 
@@ -13,7 +13,7 @@ function App() {
     const [chosenImage, setChosenImage] = useState();
 
     useEffect(() => {
-        if (localStorage.getItem("favoriteImages")) {
+        if (getFromLocalStorage("favoriteImages")) {
             const favoriteImages = getParseFromLocalStorage("favoriteImages")
             setFavoriteImages(favoriteImages)
         }
@@ -27,7 +27,11 @@ function App() {
     }
 
     const removeFromFavorite = (id) => {
-        setFavoriteImages((prevState) => prevState.filter((el) => el !== id))
+        setFavoriteImages((prevState) => {
+            const filteredArray = prevState.filter((el) => el !== id)
+            setLocalStorage("favoriteImages", [filteredArray])
+            return filteredArray
+        })
     }
 
     const openModal = (el) => {
@@ -41,8 +45,10 @@ function App() {
 
     return (
         <>
+
             <SearchBlock isFavorite={isFavorite} setData={setData}
                          setIsFavorite={setIsFavorite}/>
+
 
             <div className="imagesContainer">
                 {
