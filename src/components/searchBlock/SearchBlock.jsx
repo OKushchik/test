@@ -21,9 +21,11 @@ export const SearchBlock = ({setData, isFavorite, setIsFavorite}) => {
                     setData(data.hits)
                     setIsFavorite(false)
                     setIsLoaded(true)
-
                 })
-                .catch((error) => console.log(error))
+                .catch((error) => {
+                    alert('Something get wrong. Please try again later')
+                    throw new Error(error);
+                })
         } else {
             setIsEmpty(true)
         }

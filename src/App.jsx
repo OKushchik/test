@@ -45,7 +45,6 @@ function App() {
 
     return (
         <>
-
             <SearchBlock isFavorite={isFavorite} setData={setData}
                          setIsFavorite={setIsFavorite}/>
 
